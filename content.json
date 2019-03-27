@@ -17,12 +17,12 @@
       "description": "Some curved arrows"
     },
     {
-      "image": "light_bulb.png",
-      "description": "Ideas, Notifications, Indications"
-    },
-    {
       "image": "envelope.png",
       "description": "Mail, Messages, Notifications"
+    },
+    {
+      "image": "light_bulb.png",
+      "description": "Ideas, Notifications, Indications"
     }
   ]
 }
