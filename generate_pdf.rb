@@ -62,6 +62,29 @@ class SinglePageRight < SinglePageLeft
 end
 
 
+class DoublePage < SinglePageLeft
+
+  def render(pdf)
+    pdf.start_new_page
+
+    unless pdf.page_number % 2 == 0
+      pdf.start_new_page
+    end
+
+    pdf.image "images/#{@image}",
+              :at => @image_position,
+              :width => @@image_size,
+              :height => @@image_size
+
+    pdf.text_box @description,
+                 :at => @text_position,
+                 :align => @alignment,
+                 :width => @@box_width,
+                 :size => 8
+  end
+end
+
+
 Prawn::Document.generate("sketchbook.pdf", :page_size => "A6") do |pdf|
 
   title_page(pdf)
@@ -71,12 +94,18 @@ Prawn::Document.generate("sketchbook.pdf", :page_size => "A6") do |pdf|
   content['pages'].each do | page |
     description = page['description']
     image_name = page['image']
+    double_wide = page['double']
 
-    page = if pdf.page_number % 2 == 0 then
+    if double_wide then
+      DoublePage.new(description, image_name, pdf.margin_box).render(pdf)
+    else
+      page = if pdf.page_number % 2 == 0 then
                SinglePageLeft.new(description, image_name, pdf.margin_box)
              else
                SinglePageRight.new(description, image_name, pdf.margin_box)
-           end
-    page.render(pdf)
+             end
+      page.render(pdf)
+    end
+
   end
 end

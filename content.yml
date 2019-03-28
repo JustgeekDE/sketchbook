@@ -1,9 +1,11 @@
 pages:
   - image: "horizontal.png"
     description: "Draw some horizontal lines to loosen your wrist"
+    double: true
 
   - image: "vertical.png"
     description: "Draw some vertical lines to loosen your wrist"
+    double: true
 
   - image: "straight_arrows.png"
     description: "Some simple straight arrows"
