@@ -6,7 +6,12 @@ require "yaml"
 
 
 def title_page(pdf)
+  commit = `git rev-parse --short HEAD`.chomp
+
   pdf.text "Simple Sketchbook", :valign => :center, :align => :center, :size => 20
+  pdf.start_new_page
+  pdf.text "Version: #{commit}", :valign => :bottom, :align => :left, :size => 6
+
 end
 
 class SinglePageLeft
