@@ -72,6 +72,7 @@ class DoublePage < SinglePageLeft
                  :align => @alignment,
                  :width => @@box_width,
                  :size => 8
+    pdf.start_new_page
   end
 end
 
@@ -143,9 +144,9 @@ Prawn::Document.generate("sketchbook.pdf", :page_size => "A6") do |pdf|
       DoublePage.new(description, image_name, pdf.margin_box).render(pdf)
     else
       page = if pdf.page_number % 2 == 0 then
-               SinglePageLeft.new(description, image_name, pdf.margin_box)
-             else
                SinglePageRight.new(description, image_name, pdf.margin_box)
+             else
+               SinglePageLeft.new(description, image_name, pdf.margin_box)
              end
       page.render(pdf)
     end
