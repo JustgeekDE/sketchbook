@@ -5,15 +5,6 @@ require "json"
 require "yaml"
 
 
-def title_page(pdf)
-  commit = `git rev-parse --short HEAD`.chomp
-
-  pdf.text "Simple Sketchbook", :valign => :center, :align => :center, :size => 20
-  pdf.start_new_page
-  pdf.text "Version: #{commit}", :valign => :bottom, :align => :left, :size => 6
-
-end
-
 class SinglePageLeft
   @@box_width = 100
   @@image_size = 50
@@ -85,12 +76,64 @@ class DoublePage < SinglePageLeft
 end
 
 
+class TitlePage
+  def render(pdf)
+    commit = `git rev-parse --short HEAD`.chomp
+
+    pdf.text "Simple Sketchbook", :valign => :center, :align => :center, :size => 20
+    pdf.start_new_page
+    pdf.text "Version: #{commit}", :valign => :bottom, :align => :left, :size => 6
+  end
+end
+
+class OverviewPage
+  @@image_size = 30
+
+  def initialize(content)
+    @content = content
+  end
+
+  def render(pdf)
+    margin_height = pdf.margin_box.height
+
+    pdf.start_new_page
+    pdf.text "Overview", :valign => :top, :align => :center, :size => 16
+
+    image_y = margin_height - 30
+    image_x = 0
+
+    @content['pages'].each do |page|
+      image_name = page['image']
+
+
+      pdf.image "images/#{image_name}",
+                :at => [image_x, image_y],
+                :width => @@image_size,
+                :height => @@image_size
+
+      image_x = image_x + @@image_size
+
+      if image_x > pdf.margin_box.width - @@image_size then
+        image_x = 0
+
+        image_y = image_y - @@image_size
+        if image_y < @@image_size then
+          image_y = margin_height
+          pdf.start_new_page
+        end
+      end
+    end
+  end
+end
+
 Prawn::Document.generate("sketchbook.pdf", :page_size => "A6") do |pdf|
 
-  title_page(pdf)
-
-
   content = YAML.load_file('content.yml')
+
+  TitlePage.new.render(pdf)
+  OverviewPage.new(content).render(pdf)
+
+
   content['pages'].each do | page |
     description = page['description']
     image_name = page['image']
